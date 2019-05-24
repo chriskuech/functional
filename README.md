@@ -1,9 +1,9 @@
+# Functional
+A small functional programming utility module for PowerShell
 
-Cmdlets for functional programming in PowerShell
+## How does functional programming work in PowerShell?
 
-# How does functional programming work in PowerShell?
-
-## Processing arrays in pipelines with functions
+### Processing arrays in pipelines with functions
 Functional Programming is largely about applying functions to Lists to obtain different results.  PowerShell has good support for this as long as the function only takes a single argument, such as with filter functions and their implicit `$_` argument.
 
 ```PowerShell
@@ -11,7 +11,7 @@ Functional Programming is largely about applying functions to Lists to obtain di
 1..10 | % {$_ * $_}
 ```
 
-## Functions as first-class objects
+### Functions as first-class objects
 Functional Programming languages all support functions as first-class objects, which basically means that the function can be assigned to a variable.  PowerShell does not support functions as first-class objects—so how can PowerShell support functional programming?
 
 PowerShell supports something similar to functions, called  `scriptblock`s, which *are* first-class objects.
@@ -52,7 +52,7 @@ function addWithConstant($a) {
 &$function:add 3 # outputs `3` because `3 + $null -eq 17`
 ```
 
-# How does this module help with functional programming?
+## How does this module help with functional programming?
 
 Functional Programming is largely about applying functions to Lists to obtain different results.  PowerShell pipelines have amazing support for this, but of the three main Functional Programming functions, PowerShell only has support for two.
 
@@ -77,4 +77,7 @@ Merge-Object @{a = @{b = 1}} @{a = @{c = 2}} -Strategy Fail
 # outputs `@{a = @{b = 1; c = 2}}`
 ```
 
-Install the module with `Install-Module functional` and use the `help` cmdlet to learn more about each cmdlet.
+## Where's the rest of the docs?
+This PowerShell module is pure PowerShell (not C#) so there are some limitations with using `help`, but generally, the best way to learn about the cmdlets in the module is to install the module with `Install-Module functional` and use the `help` cmdlet to learn more about each cmdlet.
+
+Feel free to file an issue to request specific documentation improvements (or feature requests, bugs, etc).
