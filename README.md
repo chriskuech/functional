@@ -62,9 +62,12 @@ Functional Programming is largely about applying functions to Lists to obtain di
 | List, function | List of smaller length | `filter` | `Where-Object` |
 | List, function | Any type | `reduce` | *?* |
 
-This module introduces two cmdlets:
+This module introduces five cmdlets for functional programming:
 * `Reduce-Object`, for applying a function to each element of the array and an accumulated value, and returning the acculated value.
 * `Merge-Object`, for recursively merging two objects using a given strategy or a custom strategy.
+* `Test-All`, for testing if all elements are truthy
+* `Test-Any`, for testing if any elements are truthy
+* `Test-Equality`, for recursively testing for deep equality
 
 ```PowerShell
 1..10 | Reduce-Object {$a + $b}
