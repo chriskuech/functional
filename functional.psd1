@@ -71,7 +71,10 @@
   # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
   FunctionsToExport = @(
     'Merge-Object',
-    'Reduce-Object'
+    'Reduce-Object',
+    'Test-All',
+    'Test-Any',
+    'Test-Equality'
   )
 
   # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
@@ -82,6 +85,8 @@
 
   # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
   AliasesToExport   = @(
+    'exists',
+    'forall',
     'merge',
     'reduce'
   )

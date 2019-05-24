@@ -1,5 +1,5 @@
 
-Import-Module $PSScriptRoot -Force
+Import-Module $PSScriptRoot -DisableNameChecking -Force
 
 Describe "Reduce-Object" {
   Context "Given various invalid parameter invokations" {
@@ -168,6 +168,87 @@ Describe "Merge-Object" {
       $merged | Should -BeOfType [hashtable]
       $merged.Keys | Should -HaveCount 3
       $merged["b"] | Should -Be 5
+    }
+  }
+}
+
+Describe "Test-All" {
+  Context "Given valid input" {
+    It "Should allow non-boolean values" {
+      @(1, 3, "a", "chris", @{a = 3 }) | Test-All | Should -BeTrue
+    }
+    It "Should allow boolean values" {
+      $true, $true, $true, $true, $true | Test-All | Should -BeTrue
+    }
+  }
+  Context "Given invalid input" {
+    It "Should allow non-boolean values" {
+      1, 3, "", "chris", @{a = 3 } | Test-All | Should -BeFalse
+    }
+    It "Should allow boolean values" {
+      $true, $false, $true, $true, $true | Test-All | Should -BeFalse
+    }
+  }
+  Context "Given single value" {
+    It "Should pass on true" {
+      $true | Test-All | Should -BeTrue
+    }
+    It "Should fail on false" {
+      $false | Test-All | Should -BeFalse
+    }
+  }
+}
+
+Describe "Test-Any" {
+  Context "Given valid input" {
+    It "Should allow non-boolean values" {
+      @(0, 1, 0, 0) | Test-Any | Should -BeTrue
+    }
+    It "Should allow boolean values" {
+      $false, $true, $true, $false, $true | Test-Any | Should -BeTrue
+    }
+  }
+  Context "Given invalid input" {
+    It "Should allow non-boolean values" {
+      @(0, 0, "", @(), 0) | Test-Any | Should -BeFalse
+    }
+    It "Should allow boolean values" {
+      $false, $false, $false, $false, $false | Test-Any | Should -BeFalse
+    }
+  }
+  Context "Given single value" {
+    It "Should pass on true" {
+      $true | Test-Any | Should -BeTrue
+    }
+    It "Should fail on false" {
+      $false | Test-Any | Should -BeFalse
+    }
+  }
+}
+
+Describe "Test-Equality" {
+  Context "Given leaves" {
+    It "Should be true for equal values of the same type" {
+      3, 3 | Test-Equality | Should  -BeTrue
+    }
+    It "Should be false for equal values of different types" {
+      3, "3" | Test-Equality | Should -BeFalse
+    }
+  }
+  Context "Given arrays" {
+    It "Should be false for deep inequal values" {
+      @(1, 2, @{a = 1 }, 3), @(1, 2, @{a = 2 }, 3) | Test-Equality | Should -BeFalse
+    }
+    It "Should be true for deep equal values" {
+      @(1, 2, @{a = 1 }, 3), @(1, 2, @{a = 1 }, 3) | Test-Equality | Should -BeTrue
+    }
+  }
+  Context "Given hashtables" {
+    It "Should be false for deep inequal values" {
+      @{a = 1; b = @{c = 2 } }, @{a = 1; b = [pscustomobject]@{c = 2 } } | Test-Equality | Should -BeFalse
+    }
+    It "Should be true for deep equal values" {
+      @{a = 1; b = @{c = 2 } }, @{a = 1; b = @{c = 2 } } | Test-Equality | Should -BeTrue
     }
   }
 }

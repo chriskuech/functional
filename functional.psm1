@@ -1,6 +1,6 @@
 
 ##
-# enum definitions
+# enums
 #
 
 enum MergeStrategy {
@@ -44,6 +44,36 @@ function isPsCustomObject($v) {
   $v.PSTypeNames -contains 'System.Management.Automation.PSCustomObject'
 }
 
+# recursively test $a and $b for deep equality
+function recursiveEquality($a, $b) {
+  if ($a -is [array] -and $b -is [array]) {
+    Write-Debug "recursively test arrays '$a' '$b'"
+    if ($a.Count -ne $b.Count) {
+      return $false
+    }
+    $inequalIndexes = 0..($a.Count - 1) | ? { -not (recursiveEquality $a[$_] $b[$_]) }
+    return $inequalIndexes.Count -eq 0
+  }
+  if ($a -is [hashtable] -and $b -is [hashtable]) {
+    Write-Debug "recursively test hashtable '$a' '$b'"
+    $inequalKeys = $a.Keys + $b.Keys `
+    | Sort-Object -Unique `
+    | ? { -not (recursiveEquality $a[$_] $b[$_]) }
+    return $inequalKeys.Count -eq 0
+  }
+  if ((isPsCustomObject $a) -and (isPsCustomObject $b)) {
+    Write-Debug "a is pscustomobject: $($a -is [psobject])"
+    Write-Debug "recursively test objects '$a' '$b'"
+    $inequalKeys = $a.psobject.Properties + $b.psobject.Properties `
+    | % Name `
+    | Sort-Object -Unique `
+    | ? { -not (recursiveEquality $a.$_ $b.$_) }
+    return $inequalKeys.Count -eq 0
+  }
+  Write-Debug "test leaves '$a' '$b'"
+  return $a.GetType() -eq $b.GetType() -and $a -eq $b
+}
+
 # merge `$a` and `$b` recursively.  If `$a` and `$b` cannot be merged,
 # pass `$a` and `$b` to `$strategy` to resolve the conflict.
 function recursiveMerge($a, $b, [scriptblock]$strategy) {
@@ -81,6 +111,10 @@ function recursiveMerge($a, $b, [scriptblock]$strategy) {
   return &$strategy $a $b 
 }
 
+##
+# exported functions
+#
+
 <#
 .SYNOPSIS
   Merges all the input objects using the specified conflict resolution strategy
@@ -88,7 +122,6 @@ function recursiveMerge($a, $b, [scriptblock]$strategy) {
   The merged value
 #>
 function Merge-Object {
-  [OutputType([object])]
   Param(
     # The objects to merge
     [Parameter(Mandatory, ValueFromPipeline, ParameterSetName = "Named")]
@@ -125,7 +158,7 @@ function Merge-Object {
   so we are conforming to Verb-Noun convention like other *-Object cmdlets instead
 #>
 function Reduce-Object {
-  [OutputType([object])]
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseApprovedVerbs", "")]
   Param(
     # The function applied to the accumulator and each element of the input
     [Parameter(Mandatory)]
@@ -166,8 +199,73 @@ function Reduce-Object {
   return $accum
 }
 
+<#
+.SYNOPSIS
+Returns true if all elements in the pipeline are truthy
+#>
+
+filter Test-All {
+  [OutputType([boolean])]
+  Param()
+
+  process {
+    if (-not $_) {
+      $false
+      break
+    }
+  }
+
+  end {
+    $true
+  }
+}
+
+<#
+.SYNOPSIS
+Returns true if any of the elements in the pipeline are truthy
+#>
+
+filter Test-Any {
+  [OutputType([boolean])]
+  Param()
+
+  process {
+    if ($_) {
+      $true
+      break
+    }
+  }
+
+  end {
+    $false
+  }
+}
+
+<#
+.SYNOPSIS
+Returns true if all elements in the pipeline are equival
+.DESCRIPTION
+Compares each element in the pipeline to the first pipeline element using a 
+deep/recursive equality check of the properties and items
+#>
+
+function Test-Equality {
+  [OutputType([boolean])]
+  Param(
+    # The objects to compare for equality
+    [Parameter(Mandatory, ValueFromPipeline)]
+    [ValidateNotNullOrEmpty()]
+    [object[]] $Object
+  )
+
+  $head = $input | Select -First 1
+  $input | Select -Skip 1 | % { recursiveEquality $head $_ } | Test-All
+}
+
 ##
 # aliases
 #
 New-Alias -Name "merge" -Value Merge-Object
 New-Alias -Name "reduce" -Value Reduce-Object
+New-Alias -Name "forall" -Value Test-All
+New-Alias -Name "exists" -Value Test-Any
