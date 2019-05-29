@@ -172,6 +172,33 @@ Describe "Merge-Object" {
   }
 }
 
+Describe "Merge-ScriptBlock" {
+  Context "Given valid input" {
+    It "Should compose functions" {
+      $fs = @(
+        { Param($arg) "a" + $arg },
+        { Param($arg) "b" + $arg },
+        { Param($arg) "c" + $arg },
+        { Param($arg) "d" + $arg }
+      )
+      $composed = $fs | Merge-ScriptBlock
+      &$composed "e" | Should -Be "abcde"
+    }
+  }
+  # # This is throwing a false negative: https://github.com/PowerShell/PowerShell/issues/9740
+  # Context "Given invalid input" {
+  #   It "Should fail if one of the scriptblocks has invalid params" {
+  #     $fs = @(
+  #       { Param($arg) "a" + $arg },
+  #       { Param($arg1, $arg2) "b" + $arg1 },
+  #       { Param($arg) "c" + $arg },
+  #       { Param($arg) "d" + $arg }
+  #     )
+  #     { $fs | Merge-ScriptBlock } | Should -Throw
+  #   }
+  # }
+}
+
 Describe "Test-All" {
   Context "Given valid input" {
     It "Should allow non-boolean values" {

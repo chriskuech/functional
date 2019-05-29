@@ -21,16 +21,16 @@
   GUID              = '91dd1b87-d0cf-4831-8806-3e5d1033c857'
 
   # Author of this module
-  Author            = 'kuech'
+  Author            = 'Christopher Kuech'
 
   # Company or vendor of this module
   # CompanyName       = 'Unknown'
 
   # Copyright statement for this module
-  Copyright         = '(c) kuech. All rights reserved.'
+  Copyright         = '(c) Christopher Kuech. All rights reserved.'
 
   # Description of the functionality provided by this module
-  # Description = ''
+  Description       = 'Functional Programming utilities for PowerShell'
 
   # Minimum version of the PowerShell engine required by this module
   # PowerShellVersion = ''
@@ -71,6 +71,7 @@
   # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
   FunctionsToExport = @(
     'Merge-Object',
+    'Merge-ScriptBlock',
     'Reduce-Object',
     'Test-All',
     'Test-Any',
@@ -85,6 +86,7 @@
 
   # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
   AliasesToExport   = @(
+    'compose',
     'exists',
     'forall',
     'merge',

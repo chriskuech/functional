@@ -15,6 +15,11 @@ enum ParamStyle {
   Infer
 }
 
+enum Direction {
+  Left
+  Right
+}
+
 ##
 # module variables
 #
@@ -148,6 +153,18 @@ function Merge-Object {
   $input | Reduce-Object $reducer
 }
 
+function Merge-ScriptBlock {
+  [OutputType([scriptblock])]
+  Param(
+    [Parameter(Mandatory, ValueFromPipeline)]
+    [ValidateScript( { $_ | % { $_.Ast.ParamBlock.Parameters.Count -eq 1 } | Test-All } )]
+    [scriptblock[]] $ScriptBlock
+  )
+
+  $reducer = { Param($a, $b) { Param($arg) &$a (&$b $arg) }.GetNewClosure() }
+  $input | Reduce-Object $reducer
+}
+
 <#
 .SYNOPSIS
   Reduces a pipeline with the given reducer function
@@ -168,7 +185,8 @@ function Reduce-Object {
     [Parameter(Mandatory, ValueFromPipeline)]
     [ValidateNotNullOrEmpty()]
     [object[]] $Object,
-    [ParamStyle] $ParamStyle = "Infer"
+    [ParamStyle] $ParamStyle = "Infer",
+    [Direction] $Direction = "Right"
   )
 
   # deduce and validate scriptblock invokation style
@@ -177,6 +195,11 @@ function Reduce-Object {
   $explicit = $ParamStyle -ne "Implicit" -and $paramCount -eq 2
   if (-not ($implicit -or $explicit)) {
     throw "Could not reconcile Reducer parameter count '$paramCount' with param declaration style '$ParamStyle'"
+  }
+
+  # normalize input
+  if ($Direction -eq [Direction]::Left) {
+    [array]::Reverse($input)
   }
 
   # invoke the reducer
