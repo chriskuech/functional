@@ -49,7 +49,7 @@ function addWithConstant($a) {
   $a + $constant
 }
 .$function:add 3 # outputs `17` because `3 + 14 -eq 17`
-&$function:add 3 # outputs `3` because `3 + $null -eq 17`
+&$function:add 3 # outputs `3` because `3 + $null -eq 3`
 ```
 
 ## How does this module help with functional programming?
