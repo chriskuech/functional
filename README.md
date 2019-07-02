@@ -40,16 +40,18 @@ Or from a string.
 $add = [scriptblock](Get-Content add.ps1 -Raw)
 ```
 
-You can invoke your scriptblock with access to variables in your current scope using `.` or without access to your current scope using `&`.
+You can invoke your scriptblock with read/write access to variables in your current scope using `.` or with only read access to your current scope using `&`.
 
 ```PowerShell
-# demonstrate invokation scoping
-$constant = 14
-function addWithConstant($a) {
-  $a + $constant
+$n = 14
+function addToN($a) {
+  $n = $a + $n
 }
-.$function:add 3 # outputs `17` because `3 + 14 -eq 17`
-&$function:add 3 # outputs `3` because `3 + $null -eq 17`
+
+&$function:addToN 3
+$n                  # `14`
+.$function:addToN 3 
+$n                  # `17`
 ```
 
 ## How does this module help with functional programming?
