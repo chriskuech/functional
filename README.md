@@ -1,5 +1,5 @@
 # Functional
-A small functional programming utility module for PowerShell
+A small functional programming utility module for PowerShell.  Read [Functional Programming in PowerShell](https://medium.com/swlh/functional-programming-in-powershell-876edde1aadb?source=friends_link&sk=e684adbee39b5c936e44e59a1126f4eb) to learn more about how to apply functional programming paradigm to PowerShell, as well as see a more conceptual explanation and examples of using this module.
 
 ## How does functional programming work in PowerShell?
 
