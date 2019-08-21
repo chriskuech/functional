@@ -278,4 +278,11 @@ Describe "Test-Equality" {
       @{a = 1; b = @{c = 2 } }, @{a = 1; b = @{c = 2 } } | Test-Equality | Should -BeTrue
     }
   }
+  Context "Given an array of PSCustomObject" {
+    $a = @([PSCustomObject]@{ 'Name' = 'Foo'; 'Value' = 'Foo' }, [PSCustomObject]@{ 'Name' = 'Baz'; 'Value' = 'Baz'  } )
+    $b = @([PSCustomObject]@{ 'Name' = 'xxx'; 'Value' = 'Foo' }, [PSCustomObject]@{ 'Name' = 'Baz'; 'Value' = 'Baz'  } )
+    It "Should be false for deep inequal values" {      
+      $a, $b | Test-Equality | Should -BeFalse
+    }
+  }
 }

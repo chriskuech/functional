@@ -230,16 +230,20 @@ Returns true if all elements in the pipeline are truthy
 filter Test-All {
   [OutputType([boolean])]
   Param()
-
-  process {
-    if (-not $_) {
-      $false
-      break
-    }
+  
+  begin {
+    $results = @()
   }
-
+  process {
+    $results += $_
+  }
   end {
-    $true
+    foreach($result in $results){
+      if(-not $result){
+        return false
+      }
+    }
+    return $true
   }
 }
 
@@ -252,15 +256,26 @@ filter Test-Any {
   [OutputType([boolean])]
   Param()
 
-  process {
-    if ($_) {
-      $true
-      break
-    }
+  begin {
+    $results = @()
   }
-
+  process {
+    $results += $_
+  }
   end {
-    $false
+    # foreach($result in $results){
+    #   if($result -isnot [bool] -and $result -isnot [int]){
+    #     return false
+    #   }
+    # }
+    # return ($results -contains $true) 
+    foreach($result in $results){
+      if((-not $result) -eq $false){
+        return $true
+      }
+    }
+    #return ($results -contains $true) 
+    return $false
   }
 }
 
