@@ -240,7 +240,7 @@ filter Test-All {
   end {
     foreach($result in $results){
       if(-not $result){
-        return false
+        return $false
       }
     }
     return $true
