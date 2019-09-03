@@ -284,5 +284,8 @@ Describe "Test-Equality" {
     It "Should be false for deep inequal values" {
       $a, $b | Test-Equality | Should -BeFalse
     }
+    It "Should be true for deep equal values" {
+      $a, $a | Test-Equality | Should -BeTrue
+    }
   }
 }
