@@ -1,5 +1,8 @@
 @{
-  'Rules' = @{
+  'ExcludeRules' = @(
+    'PSAvoidUsingPositionalParameters'
+  )
+  'Rules'        = @{
     'PSAvoidUsingCmdletAliases' = @{
       'Whitelist' = @(
         '?',

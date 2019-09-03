@@ -26,7 +26,7 @@ enum Direction {
 
 $Strategies = @{
   Add      = {
-    Param($a, $b) 
+    Param($a, $b)
     return $a + $b
   }
   Override = {
@@ -113,7 +113,7 @@ function recursiveMerge($a, $b, [scriptblock]$strategy) {
     return [PSCustomObject]$merged
   }
   Write-Debug "resolve conflict '$a' '$b'"
-  return &$strategy $a $b 
+  return &$strategy $a $b
 }
 
 ##
@@ -226,52 +226,41 @@ function Reduce-Object {
 .SYNOPSIS
 Returns true if all elements in the pipeline are truthy
 #>
-
-filter Test-All {
+function Test-All {
   [OutputType([boolean])]
   Param()
 
-  process {
-    if (-not $_) {
-      $false
-      break
+  foreach ($e in $input) {
+    if (-not $e) {
+      return $false
     }
   }
-
-  end {
-    $true
-  }
+  return $true
 }
 
 <#
 .SYNOPSIS
 Returns true if any of the elements in the pipeline are truthy
 #>
-
-filter Test-Any {
+function Test-Any {
   [OutputType([boolean])]
   Param()
 
-  process {
-    if ($_) {
-      $true
-      break
+  foreach ($e in $input) {
+    if ($e) {
+      return $true
     }
   }
-
-  end {
-    $false
-  }
+  return $false
 }
 
 <#
 .SYNOPSIS
 Returns true if all elements in the pipeline are equival
 .DESCRIPTION
-Compares each element in the pipeline to the first pipeline element using a 
+Compares each element in the pipeline to the first pipeline element using a
 deep/recursive equality check of the properties and items
 #>
-
 function Test-Equality {
   [OutputType([boolean])]
   Param(
