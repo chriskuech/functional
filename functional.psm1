@@ -76,7 +76,7 @@ function recursiveEquality($a, $b) {
     return $inequalKeys.Count -eq 0
   }
   Write-Debug "test leaves '$a' '$b'"
-  return $a.GetType() -eq $b.GetType() -and $a -eq $b
+  return (($null -eq $a -and $null -eq $b) -or ($null -ne $a -and $null -ne $b -and $a.GetType() -eq $b.GetType() -and $a -eq $b))
 }
 
 # merge `$a` and `$b` recursively.  If `$a` and `$b` cannot be merged,
