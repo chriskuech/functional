@@ -59,13 +59,22 @@ function recursiveEquality($a, $b) {
     $inequalIndexes = 0..($a.Count - 1) | ? { -not (recursiveEquality $a[$_] $b[$_]) }
     return $inequalIndexes.Count -eq 0
   }
-  if ($a -is [hashtable] -and $b -is [hashtable]) {
+  if ($a -is [hashtable] -and $b -is [hashtable]){
     Write-Debug "recursively test hashtable '$a' '$b'"
     $inequalKeys = $a.Keys + $b.Keys `
     | Sort-Object -Unique `
     | ? { -not (recursiveEquality $a[$_] $b[$_]) }
     return $inequalKeys.Count -eq 0
   }
+
+  if ($a -is [System.Collections.IDictionary] -and $b -is [System.Collections.IDictionary]){
+    Write-Debug "recursively test Ordered Dictionary'$a' '$b'"
+    $inequalKeys = $a.Keys + $b.Keys `
+    | Sort-Object -Unique `
+    | ? { -not (recursiveEquality $a[$_] $b[$_]) }
+    return $inequalKeys.Count -eq 0
+  }
+
   if ((isPsCustomObject $a) -and (isPsCustomObject $b)) {
     Write-Debug "a is pscustomobject: $($a -is [psobject])"
     Write-Debug "recursively test objects '$a' '$b'"
