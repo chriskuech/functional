@@ -52,6 +52,16 @@ Describe "Reduce-Object" {
       $reduced | Should -Be $measured
     }
   }
+  Context "Given an explicit initial value should use that" {
+    It "Should sum up the numbers with initial value" {
+      $initValue = 30
+      $values = 1..10
+      $reducer = { Param($a, $b); $a + $b }
+      $reduced = $values | Reduce-Object $reducer -InitValue $initValue
+      $measured = $initValue + ($values | Measure-Object -Sum | % Sum)
+      $reduced | Should -Be $measured
+    }
+  }
 }
 
 Describe "Merge-Object" {
