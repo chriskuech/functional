@@ -186,7 +186,8 @@ function Reduce-Object {
     [ValidateNotNullOrEmpty()]
     [object[]] $Object,
     [ParamStyle] $ParamStyle = "Infer",
-    [Direction] $Direction = "Right"
+    [Direction] $Direction = "Right",
+    [object] $InitialValue = $null    
   )
 
   # deduce and validate scriptblock invokation style
@@ -203,9 +204,10 @@ function Reduce-Object {
   }
 
   # invoke the reducer
-  $accum = $input | Select -First 1
+  $accum = if ($null -eq $InitialValue) { $input | Select -First 1 } else  { $InitialValue }
   if ($implicit) {
-    foreach ($object in $input | Select -Skip 1) {
+    $iterated = if ($null -eq $InitialValue) { $input | Select -Skip 1 } else { $input }
+    foreach ($object in $iterated) {
       # invoke in scriptblock to minimize exposure of local variables
       $safelyScoped = {
         Param($a, $b, [scriptblock]$reducer)
