@@ -26,6 +26,10 @@ Describe "Reduce-Object" {
     It "Should not throw for explicit params and 'Infer'" {
       { 1..10 | Reduce-Object { Param($a, $b); $a + $b } -ParamStyle "Infer" } | Should -Not -Throw
     }
+    It "Should use initial value parameter if provided" {
+      $result = @("Joey","Jhonny","Dee Dee")| Reduce-Object { $a+= @{$b = $b.Length}; $a } -InitialValue @{}
+      $result, ${ "Joey" = 4; "Jhonny" = 6 ; "Dee Dee" = 7 } | Test-Equality | Should -BeTrue
+    }
   }
   Context "Given an implicit sum reducer" {
     It "Should sum up the numbers" {
